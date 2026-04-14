@@ -42,3 +42,16 @@ def update_user(user_id : int, data : UserUpdate, db : Session = Depends(get_db)
     db.commit()
     db.refresh(existing)
     return existing
+
+@router.delete('/{user_id}')
+def delete_user(user_id : int, db : Session = Depends(get_db)):
+    existing = db.query(User).where(User.id == user_id).first()
+    if not existing:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User Not Found"
+        )
+        
+    db.delete(existing)
+    db.commit()
+    return existing
