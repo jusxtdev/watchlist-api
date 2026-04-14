@@ -1,5 +1,12 @@
 from fastapi import FastAPI
-from app.routers import root_router
+from app.routers import users
 
 app = FastAPI()
-app.include_router(root_router.router)
+
+@app.get('/')
+def root():
+    return {
+        "msg" : "Watchlist API 🍿🥤"
+    }
+
+app.include_router(users.router)

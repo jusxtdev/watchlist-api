@@ -6,5 +6,5 @@ router = APIRouter(
 )
 
 @router.get('/')
-def users():
-    return "HELLO"
+def all_users():
+    return ""
