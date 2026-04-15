@@ -7,7 +7,6 @@ from app.schemas.user import UserCreate, UserUpdate, UserResponse
 
 router = APIRouter(prefix="/users", tags=["User"])  # Specify prefix for this route
 
-# TODO - Model error responses
 
 @router.get("/", response_model=list[UserResponse], status_code=status.HTTP_200_OK)
 def all_users(db: Session = Depends(get_db)):
