@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from app.routers import users, media
-from app.core.database import engine, Base, init_db
-from app.models import user
+from app.core.database import init_db
 
 app = FastAPI()
 

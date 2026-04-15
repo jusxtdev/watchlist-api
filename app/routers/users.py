@@ -3,17 +3,18 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.models.user import User
-from app.schemas.user import UserCreate, UserUpdate
+from app.schemas.user import UserCreate, UserUpdate, UserResponse
 
 router = APIRouter(prefix="/users", tags=["User"])  # Specify prefix for this route
 
+# TODO - Model error responses
 
-@router.get("/")
+@router.get("/", response_model=list[UserResponse], status_code=status.HTTP_200_OK)
 def all_users(db: Session = Depends(get_db)):
     return db.query(User).all()
 
 
-@router.post("/")
+@router.post("/", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def add_user(data: UserCreate, db: Session = Depends(get_db)):
     user = User(
         username=data.username,
@@ -25,7 +26,7 @@ def add_user(data: UserCreate, db: Session = Depends(get_db)):
     return user
 
 
-@router.put("/{user_id}")
+@router.patch("/{user_id}", response_model=UserResponse, status_code=status.HTTP_202_ACCEPTED)
 def update_user(user_id: int, data: UserUpdate, db: Session = Depends(get_db)):
     update_data = data.model_dump(exclude_unset=True)
 
@@ -43,7 +44,7 @@ def update_user(user_id: int, data: UserUpdate, db: Session = Depends(get_db)):
     return existing
 
 
-@router.delete("/{user_id}")
+@router.delete("/{user_id}", response_model=UserResponse, status_code=status.HTTP_202_ACCEPTED)
 def delete_user(user_id: int, db: Session = Depends(get_db)):
     existing = db.query(User).where(User.id == user_id).first()
     if not existing:
