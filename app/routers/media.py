@@ -13,6 +13,17 @@ def all_media(db: Session = Depends(get_db)):
     return db.query(Media).all()
 
 
+@router.get("/{media_id}", response_model=MediaResponse, status_code=status.HTTP_200_OK)
+def get_media(media_id: int, db: Session = Depends(get_db)):
+    requested = db.query(Media).where(Media.id == media_id).first()
+
+    if not requested:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Media not found"
+        )
+    return requested
+
+
 @router.post("/", response_model=MediaResponse, status_code=status.HTTP_201_CREATED)
 def add_media(data: MediaCreate, db: Session = Depends(get_db)):
     new_media = Media(title=data.title, watched=data.watched, genre=data.genre)
@@ -22,7 +33,9 @@ def add_media(data: MediaCreate, db: Session = Depends(get_db)):
     return new_media
 
 
-@router.put("/{media_id}", response_model=MediaResponse, status_code=status.HTTP_202_ACCEPTED)
+@router.put(
+    "/{media_id}", response_model=MediaResponse, status_code=status.HTTP_202_ACCEPTED
+)
 def update_media(media_id: int, data: MediaUpdate, db: Session = Depends(get_db)):
     update_data = data.model_dump(exclude_unset=True)
     existing = db.query(Media).where(Media.id == media_id).first()
@@ -39,7 +52,9 @@ def update_media(media_id: int, data: MediaUpdate, db: Session = Depends(get_db)
     return existing
 
 
-@router.delete("/{media_id}", response_model=MediaResponse, status_code=status.HTTP_202_ACCEPTED)
+@router.delete(
+    "/{media_id}", response_model=MediaResponse, status_code=status.HTTP_202_ACCEPTED
+)
 def delete_media(media_id: int, db: Session = Depends(get_db)):
     existing = db.query(Media).where(Media.id == media_id).first()
     if not existing:

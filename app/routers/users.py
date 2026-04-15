@@ -13,7 +13,16 @@ router = APIRouter(prefix="/users", tags=["User"])  # Specify prefix for this ro
 def all_users(db: Session = Depends(get_db)):
     return db.query(User).all()
 
-
+@router.get("/{user_id}", response_model=UserResponse, status_code=status.HTTP_200_OK)
+def get_user(user_id : int, db : Session = Depends(get_db)):
+    requested = db.query(User).where(User.id == user_id).first()
+    
+    if not requested:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+    return requested    
+    
 @router.post("/", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def add_user(data: UserCreate, db: Session = Depends(get_db)):
     user = User(
